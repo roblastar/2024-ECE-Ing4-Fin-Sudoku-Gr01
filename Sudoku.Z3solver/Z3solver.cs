@@ -1,5 +1,5 @@
 /*using Sudoku.Shared;
-
+//coucou
 namespace Sudoku.Z3solver;
 
 public class Z3solver : ISudokuSolver
@@ -145,7 +145,6 @@ namespace Sudoku.Z3solver
                 Console.WriteLine("Failed to solve sudoku");
                 ctx.Dispose(); // Libérer les ressources de Z3
                 throw new Exception("Sudoku not solvable");
-                ///SALUTjckbqdsc
             }
         }
     }
