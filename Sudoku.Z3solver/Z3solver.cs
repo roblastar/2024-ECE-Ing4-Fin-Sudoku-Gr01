@@ -145,7 +145,7 @@ namespace Sudoku.Z3solver
                 Console.WriteLine("Failed to solve sudoku");
                 ctx.Dispose(); // Libérer les ressources de Z3
                 throw new Exception("Sudoku not solvable");
-                ///SALUT
+                ///SALUTjckbqdsc
             }
         }
     }
