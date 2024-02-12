@@ -1,5 +1,4 @@
-﻿using Sudoku.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,19 +6,10 @@ using System.Threading;
 
 namespace Kermalis.SudokuSolver;
 
-public class SolveurHumain : ISudokuSolver
-{
-    public SudokuGrid Solve(SudokuGrid s)
-    {
-        return s;
-    }
-    
 public sealed partial class Solver
 {
 	public Puzzle Puzzle { get; }
 	public BindingList<PuzzleSnapshot> Actions { get; }
-
-    private readonly SolverTechnique[] _techniques;
 
 	public Solver(Puzzle puzzle)
 	{
@@ -281,5 +271,3 @@ public sealed partial class Solver
 		Actions.Add(new PuzzleSnapshot(action, sBoard));
 	}
 }
-}
-
