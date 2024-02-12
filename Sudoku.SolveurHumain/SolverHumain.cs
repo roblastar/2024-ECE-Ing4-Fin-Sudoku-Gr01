@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 
+// test
+
 namespace Kermalis.SudokuSolver;
 
 public class SolveurHumain : ISudokuSolver
