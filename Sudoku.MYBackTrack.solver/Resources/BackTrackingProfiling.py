@@ -53,7 +53,7 @@ if(solveSudoku(instance)):
 	#print_grid(instance)
 	r=instance
 else:
-	print ("Aucune solution trouv�e")
+	print ("Aucune solution trouvée")
 
 #execution = default_timer() - start
-#print("Le temps de r�solution est de : ", execution, " seconds as a floating point value")
+#print("Le temps de résolution est de : ", execution, " seconds as a floating point value")

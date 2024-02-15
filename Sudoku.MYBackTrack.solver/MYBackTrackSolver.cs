@@ -30,7 +30,7 @@ namespace Sudoku.MYBackTrack.solver
 
 				// run the Python script
 
-				string code = Resources.Backtracking_py;
+				string code = Resources.BackTrackingProfiling_py;
 				scope.Exec(code);
 				
 				//Retrieve solved Sudoku variable
