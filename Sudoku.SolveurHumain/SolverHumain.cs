@@ -1,287 +1,60 @@
 ﻿using Sudoku.Shared;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
+using Sudoku.SolveurHumain;
+using Kermalis.SudokuSolver;
 
-// test
-
-namespace Kermalis.SudokuSolver;
-
-public class SolveurHumain : ISudokuSolver
+namespace Sudoku.SolveurHumain
 {
-    public SudokuGrid Solve(SudokuGrid s)
+    public class SolveurHumain : ISudokuSolver
     {
-        return s;
+        public SudokuGrid Solve(SudokuGrid s)
+        {
+            // Convertir SudokuGrid en Puzzle si nécessaire
+            Puzzle puzzle = ConvertToPuzzle(s);
+            
+            Solver solver = new Solver(puzzle);
+            
+            // Appeler la méthode de résolution
+            bool success = solver.TrySolve();
+            
+            if (success)
+            {
+                // Si le puzzle est résolu, convertir Puzzle en SudokuGrid
+                return ConvertToSudokuGrid(solver.Puzzle);
+            }
+            else
+            {
+                // Gérer l'échec de la résolution
+                // Peut-être retourner le SudokuGrid original ou signaler l'échec d'une autre manière
+                return s;
+            }
+        }
+
+	private Puzzle ConvertToPuzzle(SudokuGrid s)
+	{
+		int[][] board = new int[9][];
+		for (int i = 0; i < 9; i++)
+		{
+			board[i] = new int[9];
+			for (int j = 0; j < 9; j++)
+			{
+				// Supposons que SudokuGrid a une méthode ou un indexeur pour accéder aux valeurs
+				// et que les cases vides sont représentées par 0 dans SudokuGrid
+				// Vous devrez ajuster cette logique en fonction de la structure réelle de SudokuGrid
+				board[i][j] = s[i, j]; // À ajuster selon l'implémentation de SudokuGrid
+			}
+		}
+		
+		// Créez l'objet Puzzle avec la matrice créée et isCustom défini comme vous le souhaitez
+		bool isCustom = true; // ou false, selon votre logique d'application
+		return new Puzzle(board, isCustom);
+	}
+
+
+        // Vous devez également implémenter cette conversion
+        private SudokuGrid ConvertToSudokuGrid(Puzzle puzzle)
+        {
+            // Conversion logique ici
+            return new SudokuGrid();
+        }
     }
-    
-public sealed partial class Solver
-{
-	public Puzzle Puzzle { get; }
-	public BindingList<PuzzleSnapshot> Actions { get; }
-
-    private readonly SolverTechnique[] _techniques;
-
-	public Solver(Puzzle puzzle)
-	{
-		Puzzle = puzzle;
-		Actions = [];
-
-		_techniques = InitSolverTechniques();
-	}
-	public static Solver CreateCustomPuzzle()
-	{
-		var s = new Solver(Puzzle.CreateCustom());
-		s.LogAction("Custom puzzle created");
-		return s;
-	}
-
-	public void SetOriginalCellValue(Cell cell, int value)
-	{
-		if (cell.Puzzle != Puzzle)
-		{
-			throw new ArgumentOutOfRangeException(nameof(cell), cell, "Cell belongs to another puzzle");
-		}
-
-		cell.ChangeOriginalValue(value);
-		LogAction(TechniqueFormat("Changed cell", cell.ToString()),
-			cell);
-	}
-
-	public bool TrySolve()
-	{
-		Puzzle.RefreshCandidates();
-		LogAction("Begin");
-
-		do
-		{
-			if (CheckForNakedSinglesOrCompletion(out bool changed))
-			{
-				LogAction("Solver completed the puzzle");
-				return true;
-			}
-			if (changed)
-			{
-				continue;
-			}
-			if (!RunTechnique())
-			{
-				LogAction("Solver failed the puzzle");
-				return false;
-			}
-		} while (true);
-	}
-	public bool TrySolveAsync(CancellationToken ct)
-	{
-		Puzzle.RefreshCandidates();
-		LogAction("Begin");
-
-		do
-		{
-			if (CheckForNakedSinglesOrCompletion(out bool changed))
-			{
-				LogAction("Solver completed the puzzle");
-				return true;
-			}
-			if (ct.IsCancellationRequested)
-			{
-				break;
-			}
-			if (changed)
-			{
-				continue;
-			}
-			if (!RunTechnique())
-			{
-				LogAction("Solver failed the puzzle");
-				return false;
-			}
-			if (ct.IsCancellationRequested)
-			{
-				break;
-			}
-		} while (true);
-
-		LogAction("Solver cancelled");
-		throw new OperationCanceledException(ct);
-	}
-	private bool CheckForNakedSinglesOrCompletion(out bool changed)
-	{
-		changed = false;
-		bool solved = true;
-	again:
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-				if (cell.Value != Cell.EMPTY_VALUE)
-				{
-					continue;
-				}
-
-				// Empty cell... check for naked single
-				solved = false;
-				if (cell.CandI.TryGetCount1(out int nakedSingle))
-				{
-					cell.SetValue(nakedSingle);
-
-					LogAction(TechniqueFormat("Naked single",
-						"{0}: {1}",
-						cell, nakedSingle),
-						cell);
-
-					changed = true;
-					goto again; // Restart the search for naked singles since we have the potential to create new ones
-				}
-			}
-		}
-		return solved;
-	}
-
-	private bool RunTechnique()
-	{
-		foreach (SolverTechnique t in _techniques)
-		{
-			if (t.Function.Invoke())
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static string TechniqueFormat(string technique, string format, params object[] args)
-	{
-		return string.Format(string.Format("{0,-20}", technique) + format, args);
-	}
-	private void LogAction(string action)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, false, false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, Cell culprit)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprit == cell, false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, Cell culprit, Cell semiCulprit)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprit == cell, semiCulprit == cell);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, ReadOnlySpan<Cell> culprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.SimpleIndexOf(cell) != -1, false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, ReadOnlySpan<Cell> culprits, Cell semiCulprit)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.SimpleIndexOf(cell) != -1, semiCulprit == cell);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, Cell culprit, ReadOnlySpan<Cell> semiCulprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprit == cell, semiCulprits.SimpleIndexOf(cell) != -1);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	private void LogAction(string action, ReadOnlySpan<Cell> culprits, ReadOnlySpan<Cell> semiCulprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.SimpleIndexOf(cell) != -1, semiCulprits.SimpleIndexOf(cell) != -1);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	public void LogAction(string action, IEnumerable<Cell> culprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.Contains(cell), false);
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
-	public void LogAction(string action, IEnumerable<Cell> culprits, IEnumerable<Cell> semiCulprits)
-	{
-		var sBoard = new CellSnapshot[81];
-		for (int col = 0; col < 9; col++)
-		{
-			for (int row = 0; row < 9; row++)
-			{
-				Cell cell = Puzzle[col, row];
-
-				sBoard[Utils.CellIndex(col, row)] = new CellSnapshot(cell, culprits.Contains(cell), semiCulprits.Contains(cell));
-			}
-		}
-		Actions.Add(new PuzzleSnapshot(action, sBoard));
-	}
 }
-}
-
