@@ -13,7 +13,7 @@ public sealed class Puzzle
 	public ReadOnlyCollection<ReadOnlyCollection<Region>> Regions { get; }
 
 	public bool IsCustom { get; }
-	private readonly Cell[] _board;
+	public readonly Cell[] _board;
 	internal readonly Region[] RowsI;
 	internal readonly Region[] ColumnsI;
 	internal readonly Region[] BlocksI;
@@ -21,7 +21,7 @@ public sealed class Puzzle
 
 	public Cell this[int col, int row] => _board[Utils.CellIndex(col, row)];
 
-	private Puzzle(int[][] board, bool isCustom)
+	public Puzzle(int[][] board, bool isCustom)
 	{
 		IsCustom = isCustom;
 
