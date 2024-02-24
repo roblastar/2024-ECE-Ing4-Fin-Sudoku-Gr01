@@ -21,5 +21,5 @@ Nous avons utilisé le projet Sudoku.Benchmark pour mesurer les performances de 
 
 ## Remarque : 
 
-Si pour le niveaux de difficulté Facile la résolution de semble avoir aucun problème, certaine grille du niveaux difficile et moyen contiennent néanmoins des erreurs. 
+Si pour le niveaux de difficulté Facile la résolution ne semble avoir aucun problème, certaine grille du niveaux difficile et moyen contiennent néanmoins des erreurs. 
 La limite de résolution de ce Solveur se trouve donc en fonction des niveaux
