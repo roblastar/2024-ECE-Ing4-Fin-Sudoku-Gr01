@@ -11,16 +11,16 @@ from constraint import Problem
 #          [9,0,0,0,6,5,0,0,0],
 #          [0,4,0,9,7,0,0,0,0]]
 
-def solve_sudoku_csp(grid):
+def solve_sudoku_csp(instance):
     problem = Problem()
     
     # Define variables
     for i in range(9):
         for j in range(9):
-            if grid[i][j] == 0:
+            if instance[i][j] == 0:
                 problem.addVariable((i, j), range(1, 10))
             else:
-                problem.addVariable((i, j), [grid[i][j]])
+                problem.addVariable((i, j), [instance[i][j]])
     
     # Define constraints
     for i in range(9):
