@@ -41,7 +41,8 @@ public class CspaimaSolver : PythonSolverBase
 		protected override void InitializePythonComponents()
 		{
 			//declare your pip packages here
-			//InstallPipModule("numpy");
+			InstallPipModule("python-constraint");
+
 			base.InitializePythonComponents();
 		}
 
