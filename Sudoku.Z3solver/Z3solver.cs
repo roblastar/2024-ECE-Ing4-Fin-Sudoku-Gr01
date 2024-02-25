@@ -1,18 +1,3 @@
-/*using Sudoku.Shared;
-
-namespace Sudoku.Z3solver;
-
-public class Z3solver : ISudokuSolver
-{
-    public SudokuGrid Solve(SudokuGrid s)
-    {
-        return s;
-    }
-}*/
-
-
-
-
 using Microsoft.Z3;
 using Sudoku.Shared;
 using System;
@@ -29,7 +14,7 @@ namespace Sudoku.Z3solver
         private SudokuGrid SolveWithZ3(SudokuGrid s)
         {
             Context ctx = new Context();
-            // 9x9 matrix of integer variables
+            // on va créer une matrice de 9 par 9 pour la grille du sudoku
             IntExpr[][] X = new IntExpr[9][];
             for (uint i = 0; i < 9; i++)
             {
@@ -38,7 +23,7 @@ namespace Sudoku.Z3solver
                     X[i][j] = (IntExpr)ctx.MkConst(ctx.MkSymbol("x_" + (i + 1) + "_" + (j + 1)), ctx.IntSort);
             }
 
-            // each cell contains a value in {1, ..., 9}
+            // chaques cases va contenir une valeur entre 1 et 9
             BoolExpr[][] cells_c = new BoolExpr[9][];
             for (uint i = 0; i < 9; i++)
             {
@@ -48,12 +33,12 @@ namespace Sudoku.Z3solver
                                               ctx.MkLe(X[i][j], ctx.MkInt(9)));
             }
 
-            // each row contains a digit at most once
+            // chaque ligne va contenir un seul et même chiffre une seule fois
             BoolExpr[] rows_c = new BoolExpr[9];
             for (uint i = 0; i < 9; i++)
                 rows_c[i] = ctx.MkDistinct(X[i]);
 
-            // each column contains a digit at most once
+            // chaque colonne va contenir un seul et même chiffre une seule fois 
             BoolExpr[] cols_c = new BoolExpr[9];
             for (uint j = 0; j < 9; j++)
             {
@@ -64,7 +49,7 @@ namespace Sudoku.Z3solver
                 cols_c[j] = ctx.MkDistinct(column);
             }
 
-            // each 3x3 square contains a digit at most once
+            // chaque carré de 3 par 3 contient un seul et même chiffre une seule fois 
             BoolExpr[][] sq_c = new BoolExpr[3][];
             for (uint i0 = 0; i0 < 3; i0++)
             {
@@ -87,7 +72,7 @@ namespace Sudoku.Z3solver
             foreach (BoolExpr[] t in sq_c)
                 sudoku_c = ctx.MkAnd(ctx.MkAnd(t), sudoku_c);
 
-            // sudoku instance, we use '0' for empty cells
+            // on utilise les 0 pour signifier les cases vides
             BoolExpr instance_c = ctx.MkTrue();
             for (uint i = 0; i < 9; i++)
                 for (uint j = 0; j < 9; j++)
@@ -112,7 +97,7 @@ namespace Sudoku.Z3solver
                             solution[i, j] = (int)(cellValue as IntNum).Int;
                         else
                         {
-                            // Handle the case where the value is not an integer
+                        
                             Console.WriteLine("Unexpected non-integer value in the solution.");
                             ctx.Dispose(); // Libérer les ressources de Z3
                             throw new Exception("Unexpected non-integer value in the solution");
