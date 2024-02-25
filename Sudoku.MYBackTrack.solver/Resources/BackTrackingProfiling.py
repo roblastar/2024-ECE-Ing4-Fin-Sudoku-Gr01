@@ -1,59 +1,58 @@
-from timeit import default_timer
+def solve_sudoku(grid):
+    empty_cells = [(i, j) for i in range(9) for j in range(9) if grid[i][j] == 0]
+    if not empty_cells:
+        return True  # La grille est déjà résolue
 
-#instance = ((0,0,0,0,9,4,0,3,0),
-#           (0,0,0,5,1,0,0,0,7),
-#           (0,8,9,0,0,0,0,4,0),
-#           (0,0,0,0,0,0,2,0,8),
-#           (0,6,0,2,0,1,0,5,0),
-#           (1,0,2,0,0,0,0,0,0),
-#           (0,7,0,0,0,0,5,2,0),
-#           (9,0,0,0,6,5,0,0,0),
-#           (0,4,0,9,7,0,0,0,0))
+    row, col = empty_cells[0]
 
-def findNextCellToFill(grid, i, j):
-        for x in range(i,9):
-                for y in range(j,9):
-                        if grid[x][y] == 0:
-                                return x,y
-        for x in range(0,9):
-                for y in range(0,9):
-                        if grid[x][y] == 0:
-                                return x,y
-        return -1,-1
-
-def isValid(grid, i, j, e):
-        rowOk = all([e != grid[i][x] for x in range(9)])
-        if rowOk:
-                columnOk = all([e != grid[x][j] for x in range(9)])
-                if columnOk:
-                        # finding the top left x,y co-ordinates of the section containing the i,j cell
-                        secTopX, secTopY = 3 *(i//3), 3 *(j//3) #floored quotient should be used here. 
-                        for x in range(secTopX, secTopX+3):
-                                for y in range(secTopY, secTopY+3):
-                                        if grid[x][y] == e:
-                                                return False
-                        return True
-        return False
-
-def solveSudoku(grid, i=0, j=0):
-        i,j = findNextCellToFill(grid, i, j)
-        if i == -1:
+    for num in range(1, 10):
+        if all(num != grid[row][j] for j in range(9)) and \
+           all(num != grid[i][col] for i in range(9)) and \
+           all(num != grid[row//3*3 + i//3][col//3*3 + i%3] for i in range(9)):
+            grid[row][col] = num
+            if solve_sudoku(grid):
                 return True
-        for e in range(1,10):
-                if isValid(grid,i,j,e):
-                        grid[i][j] = e
-                        if solveSudoku(grid, i, j):
-                                return True
-                        # Undo the current cell for backtracking
-                        grid[i][j] = 0
-        return False
+            grid[row][col] = 0
 
-#start = default_timer()
-if(solveSudoku(instance)):
-	#print_grid(instance)
-	r=instance
-else:
-	print ("Aucune solution trouvée")
+    return False
 
-#execution = default_timer() - start
-#print("Le temps de résolution est de : ", execution, " seconds as a floating point value")
+def forward_checking(grid, empty_cells):
+    for row, col in empty_cells:
+        possible_values = set(range(1, 10))
+        for i in range(9):
+            possible_values.discard(grid[row][i])  # Éliminer les valeurs de la ligne
+            possible_values.discard(grid[i][col])  # Éliminer les valeurs de la colonne
+        start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+        for i in range(start_row, start_row + 3):
+            for j in range(start_col, start_col + 3):
+                possible_values.discard(grid[i][j])  # Éliminer les valeurs de la sous-grille
+        if not possible_values:
+            return False
+    return True
+
+def solve_sudoku_with_forward_checking(grid):
+    empty_cells = [(i, j) for i in range(9) for j in range(9) if grid[i][j] == 0]
+    empty_cells.sort(key=lambda cell: len(set(range(1, 10)) - {grid[cell[0]][j] for j in range(9)} - {grid[i][cell[1]] for i in range(9)} - {grid[cell[0]//3*3 + i//3][cell[1]//3*3 + i%3] for i in range(9)}))
+    if solve_sudoku(grid):
+        return True
+    if forward_checking(grid, empty_cells):
+        return solve_sudoku(grid)
+    return False
+
+# Exemple d'utilisation :
+# grid = [
+#     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+#     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+#     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+#     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+#     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+#     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+#     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+#     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+#     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+# ]
+# if solve_sudoku_with_forward_checking(grid):
+#     for row in grid:
+#         print(row)
+# else:
+#     print("Aucune solution trouvée")
