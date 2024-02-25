@@ -11,16 +11,16 @@ from constraint import Problem
 #          [9,0,0,0,6,5,0,0,0],
 #          [0,4,0,9,7,0,0,0,0]]
 
-def solve_sudoku_csp(instance):
+def solve_sudoku_csp(grid):
     problem = Problem()
     
     # Define variables
     for i in range(9):
         for j in range(9):
-            if instance[i][j] == 0:
+            if grid[i][j] == 0:
                 problem.addVariable((i, j), range(1, 10))
             else:
-                problem.addVariable((i, j), [instance[i][j]])
+                problem.addVariable((i, j), [grid[i][j]])
     
     # Define constraints
     for i in range(9):
@@ -47,7 +47,7 @@ def solve_sudoku_csp(instance):
 
 #start = default_timer()
 solved_instance = solve_sudoku_csp(instance)
-##execution = default_timer() - start
+#execution = default_timer() - start
 
 if solved_instance:
    # print("Solution trouvée :")
@@ -55,6 +55,6 @@ if solved_instance:
    #     print(" ".join(map(str, row)))
         r=instance
 else:
-    print("Aucune solution trouvée")
+    print("Aucune solution Trouvée")
 
 #print("Le temps de résolution est de : ", execution, " secondes en tant que valeur flottante")
