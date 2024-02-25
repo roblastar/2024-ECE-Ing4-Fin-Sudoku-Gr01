@@ -22,5 +22,6 @@
     <ProjectReference Include="..\Sudoku.SolveurHumain\Sudoku.SolveurHumain.csproj" />
     <ProjectReference Include="..\Sudoku.MYBackTrack.solver\Sudoku.MYBackTrack.solver.csproj" />
     <ProjectReference Include="..\Sudoku.Cspaima\Sudoku.Cspaima.csproj" />
+    <ProjectReference Include="..\Sudoku.Norvig\Sudoku.Norvig.csproj" />
   </ItemGroup>
 </Project>
