@@ -10,43 +10,51 @@ from timeit import default_timer
 #           (9,0,0,0,6,5,0,0,0),
 #           (0,4,0,9,7,0,0,0,0))
 
-def findNextCellToFill(grid, i, j):
-        for x in range(i,9):
-                for y in range(j,9):
-                        if grid[x][y] == 0:
-                                return x,y
-        for x in range(0,9):
-                for y in range(0,9):
-                        if grid[x][y] == 0:
-                                return x,y
-        return -1,-1
+def solveSudoku(grid):
+    """
+    Résout le Sudoku en utilisant une approche de backtracking optimisée.
+    """
+    empty_cell = find_empty_location(grid)
+    if not empty_cell:
+        return True  # Toutes les cellules sont remplies, le Sudoku est résolu
+    row, col = empty_cell
+    
+    # Essayer les chiffres de 1 à 9 dans la cellule vide
+    for num in range(1, 10):
+        if is_valid_move(grid, row, col, num):
+            grid[row][col] = num  # Essayer le numéro
+            if solveSudoku(grid):
+                return True  # Si le Sudoku est résolu, terminer
+            grid[row][col] = 0  # Annuler la tentative actuelle
+    return False  # Aucune solution trouvée pour cette configuration
 
-def isValid(grid, i, j, e):
-        rowOk = all([e != grid[i][x] for x in range(9)])
-        if rowOk:
-                columnOk = all([e != grid[x][j] for x in range(9)])
-                if columnOk:
-                        # finding the top left x,y co-ordinates of the section containing the i,j cell
-                        secTopX, secTopY = 3 *(i//3), 3 *(j//3) #floored quotient should be used here. 
-                        for x in range(secTopX, secTopX+3):
-                                for y in range(secTopY, secTopY+3):
-                                        if grid[x][y] == e:
-                                                return False
-                        return True
-        return False
+def find_empty_location(grid):
+    """
+    Trouve la prochaine cellule vide dans la grille et renvoie ses coordonnées.
+    """
+    for row in range(9):
+        for col in range(9):
+            if grid[row][col] == 0:
+                return row, col
+    return None
 
-def solveSudoku(grid, i=0, j=0):
-        i,j = findNextCellToFill(grid, i, j)
-        if i == -1:
-                return True
-        for e in range(1,10):
-                if isValid(grid,i,j,e):
-                        grid[i][j] = e
-                        if solveSudoku(grid, i, j):
-                                return True
-                        # Undo the current cell for backtracking
-                        grid[i][j] = 0
+def is_valid_move(grid, row, col, num):
+    """
+    Vérifie si placer un numéro dans une certaine position est valide.
+    """
+    # Vérification de la ligne et de la colonne
+    if num in grid[row] or num in [grid[i][col] for i in range(9)]:
         return False
+    
+    # Vérification de la sous-grille 3x3
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    for i in range(3):
+        for j in range(3):
+            if grid[i + start_row][j + start_col] == num:
+                return False
+    
+    return True
+
 
 #start = default_timer()
 if(solveSudoku(instance)):
