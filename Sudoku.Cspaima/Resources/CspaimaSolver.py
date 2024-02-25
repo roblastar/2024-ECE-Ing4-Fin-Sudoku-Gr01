@@ -11,16 +11,17 @@ from constraint import Problem
 #          [9,0,0,0,6,5,0,0,0],
 #          [0,4,0,9,7,0,0,0,0]]
 
-def solve_sudoku_csp(instance):
+
+def solve_sudoku_csp(grid):
     problem = Problem()
     
     # Define variables
     for i in range(9):
         for j in range(9):
-            if instance[i][j] == 0:
+            if grid[i][j] == 0:
                 problem.addVariable((i, j), range(1, 10))
             else:
-                problem.addVariable((i, j), [instance[i][j]])
+                problem.addVariable((i, j), [grid[i][j]])
     
     # Define constraints
     for i in range(9):
@@ -41,20 +42,18 @@ def solve_sudoku_csp(instance):
     solution = problem.getSolution()
     if solution:
         result = [[solution[(i, j)] for j in range(9)] for i in range(9)]
-        return result
+        return True, result  # Indique qu'une solution a été trouvée et la renvoie
     else:
-        return None
+        return False, None  # Indique qu'aucune solution n'a été trouvée
 
-#start = default_timer()
-solved_instance = solve_sudoku_csp(instance)
-#execution = default_timer() - start
 
-if solved_instance:
-   # print("Solution trouvée :")
+# Appel de la fonction pour résoudre le Sudoku
+solution_found, instance = solve_sudoku_csp(instance)
+
+if solution_found:
+        # print("Solution trouvée :")
    # for row in solved_instance:
    #     print(" ".join(map(str, row)))
         r=instance
 else:
-    print("Aucune solution Trouvée")
-
-#print("Le temps de résolution est de : ", execution, " secondes en tant que valeur flottante")
+    print("Aucune solution trouvée.")
