@@ -216,7 +216,7 @@ namespace Sudoku.Shared
             MacInstaller.RunCommand($"{str1} install {module_name}{version} {str2}");
         }
 
-        public static async Task InstallPip()
+        public static void InstallPip()
         {
             string path = Path.Combine(MacInstaller.InstallPythonHome, "");
             if (!Directory.Exists(path))
@@ -226,19 +226,19 @@ namespace Sudoku.Shared
             MacInstaller.RunCommand("cd " + MacInstaller.InstallPythonHome + " && python3 get-pip.py");
         }
 
-        public static async Task<bool> TryInstallPip(bool force = false)
+        public static Task<bool> TryInstallPip(bool force = false)
         {
             if (!(!MacInstaller.IsPipInstalled() | force))
-                return false;
+                return Task.FromResult(false);
             try
             {
-               await MacInstaller.InstallPip();
-                return true;
+               MacInstaller.InstallPip();
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception trying to install pip: {ex}");
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -421,14 +421,14 @@ namespace Sudoku.Shared
 
             public string ResourceName { get; set; }
 
-            public override async Task<string> RetrievePythonZip(string destinationDirectory)
+            public override Task<string> RetrievePythonZip(string destinationDirectory)
             {
                 MacInstaller.EmbeddedResourceInstallationSource installationSource = this;
                 string str = Path.Combine(destinationDirectory, installationSource.ResourceName);
                 if (!installationSource.Force && File.Exists(str))
-                    return str;
+                    return Task.FromResult(str);
                 MacInstaller.CopyEmbeddedResourceToFile(installationSource.Assembly, installationSource.GetPythonDistributionName(), str);
-                return str;
+                return Task.FromResult(str);
             }
 
             public override string GetPythonZipFileName() => Path.GetFileName(this.ResourceName);

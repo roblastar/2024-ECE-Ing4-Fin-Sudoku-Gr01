@@ -88,14 +88,19 @@ namespace Sudoku.Shared
 
         
 
+        public SudokuGrid(int size)
+        {
+        }
+
         public SudokuGrid()
         {
         }
 
-        
+
 
         // The List property makes it easier to manipulate cells,
         public int[][] Cells { get; set; } = NeighbourIndices.Select(r => new int[9]).ToArray();
+        public int Size { get; set; }
 
 
 
@@ -376,5 +381,14 @@ namespace Sudoku.Shared
 
         public int NbEmptyCells() => Cells.SelectMany(r => r).Count(c => c == 0);
 
+        public void SetCellValue(int row, int col, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetCellValue(int row, int col)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

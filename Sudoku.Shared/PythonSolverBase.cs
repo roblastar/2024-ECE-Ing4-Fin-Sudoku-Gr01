@@ -181,7 +181,7 @@ namespace Sudoku.Shared
 			await Installer.TryInstallPip();
 
 			Python.Deployment.Installer.SetupPython().Wait();
-			Installer.TryInstallPip();
+            _ = Installer.TryInstallPip();
 
         }
 
