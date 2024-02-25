@@ -36,6 +36,8 @@ namespace Sudoku.MYBackTrack.solver
 				//Retrieve solved Sudoku variable
 				var result = scope.Get("r");
 
+			
+
 				//Convert back to C# object
 				var managedResult = result.As<int[][]>();
 				//var convertesdResult = managedResult.Select(objList => objList.Select(o => (int)o).ToArray()).ToArray();
