@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.MYBackTrack.solver",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Cspaima", "Sudoku.Cspaima\Sudoku.Cspaima.csproj", "{73ED4FDB-CE3C-42DA-BC58-29BA7668DDD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Norvig", "Sudoku.Norvig\Sudoku.Norvig.csproj", "{306FF2A3-43C3-4239-9AF4-36D930A7CF09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,10 @@ Global
 		{73ED4FDB-CE3C-42DA-BC58-29BA7668DDD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73ED4FDB-CE3C-42DA-BC58-29BA7668DDD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73ED4FDB-CE3C-42DA-BC58-29BA7668DDD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{306FF2A3-43C3-4239-9AF4-36D930A7CF09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306FF2A3-43C3-4239-9AF4-36D930A7CF09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306FF2A3-43C3-4239-9AF4-36D930A7CF09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306FF2A3-43C3-4239-9AF4-36D930A7CF09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
